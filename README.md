@@ -1,1 +1,1 @@
-# mnist-model
+# Digit Recognition
