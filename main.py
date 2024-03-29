@@ -1,24 +1,36 @@
 import numpy as np
 import pandas as pd
-from matplotlib import pyplot as plt
+from train import forward_prop
+import matplotlib.pyplot as plt
+import pickle
 
-data = pd.read_csv('/Users/sentorcc/Desktop/mnist-model/digit-recognizer/train.csv')
-data = np.array(data)
-
-m, n = data.shape
-
+data = pd.read_csv('./digit-recognizer/train.csv').to_numpy()
 np.random.shuffle(data)
-data_dev = data[0:1000].T
-Y_dev = data_dev[0]
-X_dev = data_dev[1:n]
-X_dev = X_dev / 255.
+X = data[:, 1:] / 255
+Y = data[:, 0]
+X_train, X_dev = X[1000:], X[:1000]
+Y_train, Y_devc = Y[1000:], Y[:1000]
 
-data_train = data[1000:m].T
-Y_train = data_train[0]
-X_train = data_train[1:n]
-X_train = X_train / 255.
+def load_model_pickle(filename="model_params.pkl"):
+    with open(filename, 'rb') as file:
+        params = pickle.load(file)
+    return params
 
-_,m_train = X_train.shape
-print(Y_train)
+def make_predictions(X, params):
+    _, _, _, A2 = forward_prop(*params, X)
+    predictions = np.argmax(A2, axis=0)
+    return predictions
 
+def test_prediction(index, params, X, Y):
+    current_image = X[:, index].reshape((28, 28))
+    prediction = make_predictions(X[:, index:index+1], params)
+    label = Y[index]
+    print("Prediction: ", prediction)
+    print("Label: ", label)
+    
+    plt.gray()
+    plt.imshow(current_image, interpolation='nearest')
+    plt.show()
+
+params = load_model_pickle()
 
