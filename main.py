@@ -22,6 +22,7 @@ def make_predictions(X, params):
     return predictions
 
 def test_prediction(index, params, X, Y):
+    X = X.T
     current_image = X[:, index].reshape((28, 28))
     prediction = make_predictions(X[:, index:index+1], params)
     label = Y[index]
